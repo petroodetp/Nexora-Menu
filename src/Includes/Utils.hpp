@@ -6,6 +6,7 @@
 #include <sddl.h>
 #include <random>
 #include <regex>
+#include <sstream>
 
 namespace Utils {
 
