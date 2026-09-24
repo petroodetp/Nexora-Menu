@@ -86,7 +86,7 @@ jobs:
           '@ | Set-Content $api -Encoding UTF8
           }
 
-           - name: Build Release x64
+      - name: Build Release x64
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
