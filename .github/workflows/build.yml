@@ -2,6 +2,8 @@ name: Build Nexora
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
   build:
@@ -14,14 +16,112 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v3
 
-      - name: Build Release x64
+      - name: Install DirectX D3DX
+        shell: pwsh
         run: |
-          msbuild "Nexora V1.0.sln" /p:Configuration=Release /p:Platform=x64 /m
+          $ErrorActionPreference = "Stop"
+
+          nuget install Microsoft.DXSDK.D3DX `
+            -Version 9.29.952.8 `
+            -OutputDirectory "$env:GITHUB_WORKSPACE\deps" `
+            -NonInteractive
+
+          $pkg = Get-ChildItem "$env:GITHUB_WORKSPACE\deps" -Directory |
+            Where-Object { $_.Name -like "Microsoft.DXSDK.D3DX.*" } |
+            Select-Object -First 1
+
+          if (-not $pkg) {
+            throw "D3DX package not found"
+          }
+
+          $native = Join-Path $pkg.FullName "build\native"
+
+          $header = Get-ChildItem $native -Recurse -Filter "d3dx11.h" |
+            Select-Object -First 1
+
+          $lib = Get-ChildItem $native -Recurse -Filter "D3DX11.lib" |
+            Where-Object { $_.FullName -match "\\x64\\" } |
+            Select-Object -First 1
+
+          $lib9 = Get-ChildItem $native -Recurse -Filter "d3dx9.lib" |
+            Where-Object { $_.FullName -match "\\x64\\" } |
+            Select-Object -First 1
+
+          if (-not $header) { throw "d3dx11.h not found" }
+          if (-not $lib) { throw "D3DX11.lib not found" }
+          if (-not $lib9) { throw "d3dx9.lib not found" }
+
+          "DXSDK_DIR=$native\" | Out-File $env:GITHUB_ENV -Append
+          "D3DX_INCLUDE=$($header.Directory.FullName)" | Out-File $env:GITHUB_ENV -Append
+          "D3DX_LIB=$($lib.Directory.FullName)" | Out-File $env:GITHUB_ENV -Append
+
+      - name: Restore JSON dependency
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $json = "$env:GITHUB_WORKSPACE\src\Security\Api\json.hpp"
+
+          New-Item -ItemType Directory `
+            -Force `
+            -Path (Split-Path $json) | Out-Null
+
+          Invoke-WebRequest `
+            -Uri "https://raw.githubusercontent.com/nlohmann/json/v3.12.0/single_include/nlohmann/json.hpp" `
+            -OutFile $json
+
+          if (-not (Test-Path $json)) {
+            throw "json.hpp could not be downloaded"
+          }
+
+      - name: Restore API header
+        shell: pwsh
+        run: |
+          $api = "$env:GITHUB_WORKSPACE\src\Security\Api\api.hpp"
+
+          if (-not (Test-Path $api)) {
+            @'
+          #pragma once
+          #include "json.hpp"
+          '@ | Set-Content $api -Encoding UTF8
+          }
+
+      - name: Build Release x64
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          msbuild "Nexora V1.0.sln" `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /p:DXSDK_DIR="$env:DXSDK_DIR" `
+            /p:IncludePath="$env:D3DX_INCLUDE;$(IncludePath)" `
+            /p:LibraryPath="$env:D3DX_LIB;$(LibraryPath)" `
+            /m `
+            /v:minimal
+
+      - name: Find EXE
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem "$env:GITHUB_WORKSPACE" `
+            -Recurse `
+            -Filter "*.exe" |
+            Where-Object {
+              $_.FullName -match "\\(Release|x64\\Release)\\"
+            } |
+            Select-Object -First 1
+
+          if (-not $exe) {
+            throw "No Release x64 EXE produced"
+          }
+
+          Write-Host "EXE trouvé : $($exe.FullName)"
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
           name: Nexora-x64
+          if-no-files-found: error
           path: |
             **/Release/*.exe
             **/x64/Release/*.exe
