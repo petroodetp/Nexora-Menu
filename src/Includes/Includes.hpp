@@ -24,6 +24,7 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
+#include <unordered_map>
 
 #include <d3dx11.h>
 #include <d3d11.h>
