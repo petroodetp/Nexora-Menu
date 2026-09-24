@@ -1,0 +1,27 @@
+name: Build Nexora
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v3
+
+      - name: Build Release x64
+        run: |
+          msbuild "Nexora V1.0.sln" /p:Configuration=Release /p:Platform=x64 /m
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nexora-x64
+          path: |
+            **/Release/*.exe
+            **/x64/Release/*.exe
