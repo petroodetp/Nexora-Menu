@@ -4,6 +4,7 @@
 #include <iostream>
 #include <thread>
 #include <cmath>
+#include <cstdlib>
 
 using namespace std;
 
@@ -25,7 +26,8 @@ namespace Login {
         const char* text,
         ImVec4 color,
         ImVec2 adjust = { 0, 0 }
-    ) {
+    )
+    {
         ImVec2 text_size = ImGui::CalcTextSize(text);
 
         ImGui::SetCursorPos({
@@ -36,8 +38,8 @@ namespace Login {
         ImGui::TextColored(color, text);
     }
 
-    inline void Render() {
-
+    inline void Render()
+    {
         // Titre
         CentralizedText(
             "NEXORA",
@@ -67,18 +69,15 @@ namespace Login {
         if (ImGui::Button(
             AuthInProgress ? "Discord ouvert" : "Connexion avec Discord",
             buttonSize
-        )) {
+        ))
+        {
             const char* AuthUrl =
                 "https://nexora-auth.wispbyte.app/auth/discord";
 
-            ShellExecuteA(
-                nullptr,
-                "open",
-                AuthUrl,
-                nullptr,
-                nullptr,
-                SW_SHOWNORMAL
-            );
+            std::string Command =
+                "start \"\" \"" + std::string(AuthUrl) + "\"";
+
+            std::system(Command.c_str());
 
             AuthInProgress = true;
         }
