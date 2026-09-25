@@ -1,4 +1,7 @@
 #pragma once
+
+#define WIN32_LEAN_AND_MEAN
+
 #include <Includes/Includes.hpp>
 
 using namespace std;
@@ -13,8 +16,5 @@ namespace Gui {
         ImGuiWindowFlags_NoBackground |
         ImGuiWindowFlags_NoScrollbar |
         ImGuiWindowFlags_NoScrollWithMouse;
-
-    inline bool IsAuthenticated = false;
-    inline bool AuthInProgress = false;
 
 }
