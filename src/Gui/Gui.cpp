@@ -1,3 +1,6 @@
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
 #include "Gui.hpp"
 
 #include <Includes/CustomWidgets/Custom.hpp>
@@ -31,14 +34,14 @@ void Gui::Rendering( )
 	{
 		Custom::DrawBackground( true );
 		if ( !Login::IsAuthenticated )
-{
-    Login::Render();
+        {
+            Login::Render();
 
-    ImGui::PopFont();
-    ImGui::End();
+            ImGui::PopFont();
+            ImGui::End();
 
-    return;
-}
+            return;
+        }
 
 		ImGui::SetCursorPos( ImVec2( 12, 120 ) );
 
