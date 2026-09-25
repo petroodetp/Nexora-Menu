@@ -67,7 +67,7 @@ namespace Login {
         });
 
         if (ImGui::Button(
-            AuthInProgress ? "Discord ouvert" : "Connexion avec Discord",
+            AuthInProgress ? "Discord ouvert..." : "Connexion avec Discord",
             buttonSize
         ))
         {
@@ -92,6 +92,17 @@ namespace Login {
             ImVec4(0.6f, 0.6f, 0.6f, 1.0f),
             "Une fenêtre de navigateur va s'ouvrir."
         );
+
+        // Bouton Fermer
+        ImGui::SetCursorPos({
+            window_center.x - 80,
+            window_center.y + 120
+        });
+
+        if (ImGui::Button("Fermer", ImVec2(160, 35)))
+        {
+            ExitProcess(0);
+        }
 
         // Note
         ImGui::SetCursorPos({
