@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Includes/Includes.hpp>
-#include <windows.h>
-#include <shellapi.h>
 #include <iostream>
 #include <thread>
 #include <cmath>
