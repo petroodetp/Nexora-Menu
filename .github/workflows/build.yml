@@ -61,23 +61,49 @@ jobs:
           "DXSDK_DIR=$dxCompat\" | Out-File $env:GITHUB_ENV -Append
          
       - name: Restore JSON dependency
+      - name: Restore JSON dependency
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
 
           $json = "$env:GITHUB_WORKSPACE\src\Security\Api\json.hpp"
 
-          New-Item -ItemType Directory `
-            -Force `
-            -Path (Split-Path $json) | Out-Null
+          New-Item -ItemType Directory -Force -Path (Split-Path $json) | Out-Null
 
-          Invoke-WebRequest `
-            -Uri "https://raw.githubusercontent.com/nlohmann/json/v3.12.0/single_include/nlohmann/json.hpp" `
-            -OutFile $json
+          curl.exe -L --fail --retry 3 `
+            "https://raw.githubusercontent.com/nlohmann/json/v3.12.0/single_include/nlohmann/json.hpp" `
+            -o "$json"
 
           if (-not (Test-Path $json)) {
             throw "json.hpp could not be downloaded"
           }
+
+          $size = (Get-Item $json).Length
+          Write-Host "json.hpp size: $size bytes"
+
+          if ($size -lt 500000) {
+            throw "json.hpp is unexpectedly small or invalid"
+          }
+
+          $hasGuard = Select-String `
+            -Path $json `
+            -Pattern "INCLUDE_NLOHMANN_JSON_HPP_" `
+            -Quiet
+
+          $hasNamespace = Select-String `
+            -Path $json `
+            -Pattern "namespace nlohmann" `
+            -Quiet
+
+          if (-not $hasGuard) {
+            throw "json.hpp does not look like nlohmann/json.hpp"
+          }
+
+          if (-not $hasNamespace) {
+            throw "json.hpp does not contain namespace nlohmann"
+          }
+
+          Write-Host "nlohmann/json.hpp verified successfully"
 
       - name: Restore API header
         shell: pwsh
