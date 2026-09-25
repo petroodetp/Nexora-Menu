@@ -237,7 +237,6 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="Includes\ImGui\Files\freetype\win64\freetype.lib" />
-    <Library Include="Security\Api\curl\libcurl.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
