@@ -61,7 +61,6 @@ jobs:
           "DXSDK_DIR=$dxCompat\" | Out-File $env:GITHUB_ENV -Append
          
       - name: Restore JSON dependency
-      - name: Restore JSON dependency
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
