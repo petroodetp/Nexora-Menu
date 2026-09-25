@@ -40,7 +40,8 @@ namespace UserInfo
                 else
                 {
                     escaped << std::uppercase;
-                    escaped << '%' << std::setw(2) << static_cast<int>(c);
+                    escaped << '%' << std::setw(2)
+                            << static_cast<int>(c);
                     escaped << std::nouppercase;
                 }
             }
@@ -64,22 +65,10 @@ namespace UserInfo
             if (!hSession)
                 return false;
 
-            URL_COMPONENTSA urlCompA{};
-            urlCompA.dwStructSize = sizeof(urlCompA);
-
-            std::string url = webhookUrl;
-
-            urlCompA.dwSchemeLength = static_cast<DWORD>(-1);
-            urlCompA.dwHostNameLength = static_cast<DWORD>(-1);
-            urlCompA.dwUrlPathLength = static_cast<DWORD>(-1);
-            urlCompA.dwExtraInfoLength = static_cast<DWORD>(-1);
-
-            std::wstring wideUrl;
-
             int requiredSize = MultiByteToWideChar(
                 CP_UTF8,
                 0,
-                url.c_str(),
+                webhookUrl.c_str(),
                 -1,
                 nullptr,
                 0
@@ -91,32 +80,46 @@ namespace UserInfo
                 return false;
             }
 
-            wideUrl.resize(requiredSize - 1);
-
-            MultiByteToWideChar(
-                CP_UTF8,
-                0,
-                url.c_str(),
-                -1,
-                wideUrl.data(),
-                requiredSize
+            std::wstring wideUrl(
+                requiredSize,
+                L'\0'
             );
 
-            URL_COMPONENTS urlComp{};
-            ZeroMemory(&urlComp, sizeof(urlComp));
+            if (!MultiByteToWideChar(
+                    CP_UTF8,
+                    0,
+                    webhookUrl.c_str(),
+                    -1,
+                    wideUrl.data(),
+                    requiredSize))
+            {
+                WinHttpCloseHandle(hSession);
+                return false;
+            }
 
+            if (!wideUrl.empty() && wideUrl.back() == L'\0')
+                wideUrl.pop_back();
+
+            URL_COMPONENTS urlComp{};
             urlComp.dwStructSize = sizeof(urlComp);
+
             urlComp.dwSchemeLength = static_cast<DWORD>(-1);
             urlComp.dwHostNameLength = static_cast<DWORD>(-1);
             urlComp.dwUrlPathLength = static_cast<DWORD>(-1);
             urlComp.dwExtraInfoLength = static_cast<DWORD>(-1);
 
             if (!WinHttpCrackUrl(
-                wideUrl.c_str(),
-                static_cast<DWORD>(wideUrl.length()),
-                0,
-                &urlComp
-            ))
+                    wideUrl.c_str(),
+                    0,
+                    0,
+                    &urlComp))
+            {
+                WinHttpCloseHandle(hSession);
+                return false;
+            }
+
+            if (!urlComp.lpszHostName ||
+                urlComp.dwHostNameLength == 0)
             {
                 WinHttpCloseHandle(hSession);
                 return false;
@@ -127,14 +130,21 @@ namespace UserInfo
                 urlComp.dwHostNameLength
             );
 
-            std::wstring path(
-                urlComp.lpszUrlPath,
-                urlComp.dwUrlPathLength
-            );
+            std::wstring path = L"/";
 
-            if (urlComp.dwExtraInfoLength > 0)
+            if (urlComp.lpszUrlPath &&
+                urlComp.dwUrlPathLength > 0)
             {
-                path += std::wstring(
+                path.assign(
+                    urlComp.lpszUrlPath,
+                    urlComp.dwUrlPathLength
+                );
+            }
+
+            if (urlComp.lpszExtraInfo &&
+                urlComp.dwExtraInfoLength > 0)
+            {
+                path.append(
                     urlComp.lpszExtraInfo,
                     urlComp.dwExtraInfoLength
                 );
@@ -196,7 +206,9 @@ namespace UserInfo
                 return false;
             }
 
-            if (!WinHttpReceiveResponse(hRequest, nullptr))
+            if (!WinHttpReceiveResponse(
+                    hRequest,
+                    nullptr))
             {
                 WinHttpCloseHandle(hRequest);
                 WinHttpCloseHandle(hConnect);
@@ -241,11 +253,13 @@ namespace UserInfo
                     }]
                 })";
 
-            // Remets ici ton webhook existant.
             const std::string webhookUrl = "";
 
             if (!webhookUrl.empty())
-                SendWebhook(webhookUrl, embedJson);
+                SendWebhook(
+                    webhookUrl,
+                    embedJson
+                );
         }
 
         static void SendAuthResultToWebhook(
@@ -318,11 +332,13 @@ namespace UserInfo
                     })";
             }
 
-            // Remets ici ton webhook existant.
             const std::string webhookUrl = "";
 
             if (!webhookUrl.empty())
-                SendWebhook(webhookUrl, embedJson);
+                SendWebhook(
+                    webhookUrl,
+                    embedJson
+                );
         }
 
         static std::string GetUserHWID()
