@@ -1,6 +1,8 @@
 #pragma once
+
 #include <Includes/Includes.hpp>
 #include <windows.h>
+#include <shellapi.h>
 #include <iostream>
 #include <thread>
 #include <cmath>
@@ -9,16 +11,19 @@ using namespace std;
 
 namespace Login {
 
+    inline bool IsAuthenticated = false;
+    inline bool AuthInProgress = false;
+
     static int iSubTabCount = 0;
     static float SubTabAlpha = 0.f;
     static int iSubTab = 0;
 
-    ImVec2 window_center = ImVec2(
+    inline ImVec2 window_center = ImVec2(
         g_MenuInfo.MenuSize.x * 0.5f,
         g_MenuInfo.MenuSize.y * 0.5f
     );
 
-    void CentralizedText(
+    inline void CentralizedText(
         const char* text,
         ImVec4 color,
         ImVec2 adjust = { 0, 0 }
@@ -33,9 +38,9 @@ namespace Login {
         ImGui::TextColored(color, text);
     }
 
-    void Render() {
+    inline void Render() {
 
-        // Page de login simple avec juste un message
+        // Titre
         CentralizedText(
             "NEXORA",
             g_Col.PrimaryText,
@@ -53,59 +58,43 @@ namespace Login {
             "Système d'authentification"
         );
 
-        // Message d'attente
+        // Bouton Discord
+        const ImVec2 buttonSize = ImVec2(260, 45);
+
         ImGui::SetCursorPos({
-            window_center.x - 200,
+            window_center.x - buttonSize.x / 2,
             window_center.y
+        });
+
+        if (ImGui::Button(
+            AuthInProgress ? "Discord ouvert" : "Connexion avec Discord",
+            buttonSize
+        )) {
+            const char* AuthUrl =
+                "https://nexora-auth.wispbyte.app/auth/discord";
+
+            ShellExecuteA(
+                nullptr,
+                "open",
+                AuthUrl,
+                nullptr,
+                nullptr,
+                SW_SHOWNORMAL
+            );
+
+            AuthInProgress = true;
+        }
+
+        // Information
+        ImGui::SetCursorPos({
+            window_center.x - 210,
+            window_center.y + 75
         });
 
         ImGui::TextColored(
             ImVec4(0.6f, 0.6f, 0.6f, 1.0f),
-            "Vérification en cours..."
+            "Une fenêtre de navigateur va s'ouvrir."
         );
-
-        // Animation de chargement
-        static float spinnerAngle = 0.0f;
-
-        spinnerAngle += ImGui::GetIO().DeltaTime * 5.0f;
-
-        ImDrawList* drawList = ImGui::GetWindowDrawList();
-
-        ImVec2 center = {
-            window_center.x,
-            window_center.y + 50
-        };
-
-        const int segments = 12;
-        const float radius = 12.0f;
-
-        for (int i = 0; i < segments; i++) {
-
-            float angle =
-                spinnerAngle +
-                (2.0f * IM_PI * i / segments);
-
-            float alpha =
-                static_cast<float>(i + 1) / segments;
-
-            ImVec2 point = {
-                center.x + cosf(angle) * radius,
-                center.y + sinf(angle) * radius
-            };
-
-            drawList->AddCircleFilled(
-                point,
-                2.5f,
-                ImGui::GetColorU32(
-                    ImVec4(
-                        1.0f,
-                        1.0f,
-                        1.0f,
-                        alpha
-                    )
-                )
-            );
-        }
 
         // Note
         ImGui::SetCursorPos({

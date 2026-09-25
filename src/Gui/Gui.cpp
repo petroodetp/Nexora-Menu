@@ -30,6 +30,15 @@ void Gui::Rendering( )
 	ImGui::PushFont( g_Variables.m_FontNormal );
 	{
 		Custom::DrawBackground( true );
+		if ( !Login::IsAuthenticated )
+{
+    Login::Render();
+
+    ImGui::PopFont();
+    ImGui::End();
+
+    return;
+}
 
 		ImGui::SetCursorPos( ImVec2( 12, 120 ) );
 

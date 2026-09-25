@@ -5,7 +5,16 @@ using namespace std;
 
 namespace Gui {
 
-	void Rendering( );
-	inline DWORD ImGuiWindowFlags = ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+    void Rendering();
+
+    inline DWORD ImGuiWindowFlags =
+        ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_NoDecoration |
+        ImGuiWindowFlags_NoBackground |
+        ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoScrollWithMouse;
+
+    inline bool IsAuthenticated = false;
+    inline bool AuthInProgress = false;
 
 }
