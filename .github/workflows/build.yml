@@ -51,10 +51,15 @@ jobs:
           if (-not $lib) { throw "D3DX11.lib not found" }
           if (-not $lib9) { throw "d3dx9.lib not found" }
 
-          "DXSDK_DIR=$native\" | Out-File $env:GITHUB_ENV -Append
-          "D3DX_INCLUDE=$($header.Directory.FullName)" | Out-File $env:GITHUB_ENV -Append
-          "D3DX_LIB=$($lib.Directory.FullName)" | Out-File $env:GITHUB_ENV -Append
+          $dxCompat = "$env:GITHUB_WORKSPACE\deps\dxsdk-compat"
 
+          New-Item -ItemType Directory -Force -Path "$dxCompat\Include" | Out-Null
+          New-Item -ItemType Directory -Force -Path "$dxCompat\Lib\x64" | Out-Null
+
+          Copy-Item "$($header.Directory.FullName)\*" "$dxCompat\Include\" -Recurse -Force
+          Copy-Item "$($lib.Directory.FullName)\*" "$dxCompat\Lib\x64\" -Recurse -Force
+          "DXSDK_DIR=$dxCompat\" | Out-File $env:GITHUB_ENV -Append
+         
       - name: Restore JSON dependency
         shell: pwsh
         run: |
