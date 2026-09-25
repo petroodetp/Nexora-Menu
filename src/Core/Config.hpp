@@ -2,6 +2,7 @@
 #include <Includes/Includes.hpp>
 #include <Includes/Utils.hpp>
 #include <iostream>
+#include <Security/Api/json.hpp>
 
 namespace Core {
 
