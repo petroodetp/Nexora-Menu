@@ -2,6 +2,7 @@
 #include <Includes/includes.hpp>
 #include <Includes/Utils.hpp>
 #include <map>
+#include <functional>
 
 
 namespace Custom {
