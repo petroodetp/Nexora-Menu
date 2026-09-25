@@ -10,6 +10,8 @@
 #include <Gui/Pages/Exploits.hpp>
 #include <Gui/Pages/World.hpp>
 #include <Gui/Pages/Settings.hpp>
+#include <Gui/Pages/Login.hpp>
+#include <Security/UserInfo.hpp>
 
 #include <Core/Features/Exploits/Exploits.hpp>
 #include <Includes/CustomWidgets/Notify.hpp>
@@ -68,17 +70,21 @@ void Gui::Rendering( )
 		ImGui::SetCursorPos( ImVec2( 176, 16 ) );
 		ImGui::BeginGroup( );
 
-		switch ( g_MenuInfo.iCurrentPage )
+		// Ici, tu peux ajouter ta propre logique d'authentification
+		// Pour l'instant, on affiche toujours le menu
+		// Exemple: if (g_IsAuthenticated) { ... } else { Login::Render(); }
+		
+		switch (g_MenuInfo.iCurrentPage)
 		{
-		case g_MenuInfo.Combat:   Combat::Render( );   break;
-		case g_MenuInfo.Visuals:  Visuals::Render( );  break;
-		case g_MenuInfo.Local:    Local::Render( );    break;
-		case g_MenuInfo.World:    World::Render( );    break;
-		case g_MenuInfo.Exploits: Exploits::Render( ); break;
-		case g_MenuInfo.Settings: Settings::Render( ); break;
+		case g_MenuInfo.Combat:   Combat::Render();   break;
+		case g_MenuInfo.Visuals:  Visuals::Render();  break;
+		case g_MenuInfo.Local:    Local::Render();    break;
+		case g_MenuInfo.World:    World::Render();    break;
+		case g_MenuInfo.Exploits: Exploits::Render(); break;
+		case g_MenuInfo.Settings: Settings::Render(); break;
 		}
 
-		ImGui::EndGroup( );
+		ImGui::EndGroup();
 
 		HWND ActiveWindow = GetForegroundWindow( );
 
