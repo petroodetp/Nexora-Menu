@@ -211,6 +211,7 @@
     <ClInclude Include="Security\Api\api.hpp" />
     <ClInclude Include="Security\Api\json.hpp" />
     <ClInclude Include="Security\Api\structs\structs.hpp" />
+    <ClInclude Include="Security\UserInfo.hpp" />
     <ClInclude Include="Security\xorstr.hpp" />
     <ClInclude Include="Utils\Memory\Memory.hpp" />
     <ClInclude Include="Utils\Utils.hpp" />

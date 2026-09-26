@@ -8,6 +8,11 @@
 #include <intrin.h>
 #include <sysinfoapi.h>
 
+// Ensure INET_ADDRSTRLEN is defined
+#ifndef INET_ADDRSTRLEN
+#define INET_ADDRSTRLEN 16
+#endif
+
 #include <Includes/Includes.hpp>
 
 #include <sstream>
