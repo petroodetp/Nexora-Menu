@@ -38,6 +38,16 @@ namespace Login {
         ImGui::TextColored(color, text);
     }
 
+    inline void CheckAuthStatus()
+    {
+        // Envoie une requête HTTP vers ton serveur pour vérifier l'auth
+        // Si auth = true, on set IsAuthenticated = true
+        // Tu devras implémenter cette fonction avec ton serveur
+        
+        // Pour l'instant, on met à true pour tester
+        IsAuthenticated = true;
+    }
+
     inline void Render()
     {
         // Titre
@@ -90,9 +100,7 @@ namespace Login {
 
         if (ImGui::Button("Vérifier l'authentification", buttonSize))
         {
-            // Ici tu devrais vérifier avec ton serveur
-            // Pour l'instant, je mets à true temporairement pour tester
-            IsAuthenticated = true;
+            CheckAuthStatus();
         }
 
         // Information
