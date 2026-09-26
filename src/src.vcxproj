@@ -220,7 +220,6 @@
   <ItemGroup>
     <ClCompile Include="Core\Features\Aimbot.cpp" />
     <ClCompile Include="Core\Features\Esp.cpp" />
-    <ClCompile Include="Core\Features\Exploits\HandlingEditor.hpp" />
     <ClCompile Include="Core\Features\SilentAim.cpp" />
     <ClCompile Include="Core\Features\Triggerbot.cpp" />
     <ClCompile Include="Core\SDK\Memory.cpp" />
