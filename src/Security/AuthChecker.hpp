@@ -1,5 +1,6 @@
 #pragma once
 #include <Includes/Includes.hpp>
+#include <windows.h>
 #include <winhttp.h>
 #include <string>
 #include <fstream>
