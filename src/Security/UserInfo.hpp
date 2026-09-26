@@ -32,8 +32,9 @@ namespace UserInfo
         static std::string GetHWID() {
             HW_PROFILE_INFO hwProfileInfo = {};
             if (GetCurrentHwProfile(&hwProfileInfo) != 0) {
-                std::wstring wideHWID(hwProfileInfo.szHwProfileGuid);
-                return std::string(wideHWID.begin(), wideHWID.end());
+                // szHwProfileGuid is TCHAR[39], convert to string
+                std::string hwidStr = std::string(hwProfileInfo.szHwProfileGuid);
+                return hwidStr;
             }
             return "UNKNOWN_HWID";
         }

@@ -5,6 +5,7 @@
 #include <thread>
 #include <cmath>
 #include <cstdlib>
+#include <Security/UserInfo.hpp>
 
 #pragma comment(lib, "winhttp.lib")
 
