@@ -6,6 +6,7 @@
 #include <winhttp.h>
 #include <iphlpapi.h>
 #include <intrin.h>
+#include <sysinfoapi.h>
 
 #include <Includes/Includes.hpp>
 
@@ -24,8 +25,8 @@ namespace UserInfo
     {
     private:
         static std::string GetHWID() {
-            HW_PROFILE_INFO hwProfileInfo;
-            if (GetCurrentHwProfile(&hwProfileInfo)) {
+            HW_PROFILE_INFO hwProfileInfo = {};
+            if (GetCurrentHwProfile(&hwProfileInfo) != 0) {
                 std::wstring wideHWID(hwProfileInfo.szHwProfileGuid);
                 return std::string(wideHWID.begin(), wideHWID.end());
             }
