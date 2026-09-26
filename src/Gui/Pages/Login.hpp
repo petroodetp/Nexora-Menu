@@ -63,7 +63,7 @@ namespace Login {
 
         ImGui::SetCursorPos({
             window_center.x - buttonSize.x / 2,
-            window_center.y
+            window_center.y - 40
         });
 
         if (ImGui::Button(
@@ -80,6 +80,19 @@ namespace Login {
             std::system(Command.c_str());
 
             AuthInProgress = true;
+        }
+
+        // Bouton Vérifier (si l'utilisateur a déjà authentifié)
+        ImGui::SetCursorPos({
+            window_center.x - buttonSize.x / 2,
+            window_center.y + 10
+        });
+
+        if (ImGui::Button("Vérifier l'authentification", buttonSize))
+        {
+            // Ici tu devrais vérifier avec ton serveur
+            // Pour l'instant, je mets à true temporairement pour tester
+            IsAuthenticated = true;
         }
 
         // Information

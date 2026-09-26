@@ -136,6 +136,13 @@ namespace Gui
 				Gui::Rendering( );
 
 				ImGui::PopStyleVar( );
+
+				// Raccourci F10 pour fermer le menu
+				if ( GetAsyncKeyState( VK_F10 ) & 1 )
+				{
+					g_MenuInfo.IsOpen = false;
+					SetWindowLong( g_Variables.g_hCheatWindow, GWL_EXSTYLE, WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT );
+				}
 			}
 			ImGui::EndFrame( );
 
